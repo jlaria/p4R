@@ -4,9 +4,7 @@ Title: RStudio project template for parallel computations
 Version: 0.1.0
 Author: Juan C. Laria
 Maintainer: Juan C. Laria <juank.laria@gmail.com>
-Description: This RStudio project template provides interface functions to run code in parallel using foreach, 
-regardless of the backend  (doParallel or doMPI). This is very useful to debug simulations locally 
-before running them in a MPI cluster.
+Description: This RStudio project template provides interface functions to run code in parallel using foreach, regardless of the backend  (doParallel or doMPI). This is very useful to debug simulations locally before running them in a MPI cluster.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
