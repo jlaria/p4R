@@ -8,8 +8,14 @@ doParallel and/or doMPI.
 
 ## Install
 
-To install this package in RStudio, you need `devtools` in R. Then, run
-the following.
+To install this package in RStudio, you need `devtools` in R. You can
+install it with
+
+``` r
+install.packages("devtools")
+```
+
+Then, run the following.
 
 ``` r
 devtools::install_github("jlaria/p4R")
@@ -19,3 +25,83 @@ devtools::install_github("jlaria/p4R")
 
 To start a new project go to **File** -\> **New Project …** and then
 select **p4R Project Template** ![](pic.png)
+
+Name your project and select its folder, then **Create Project**.
+
+By default, a *p4R* project template contains the following files and
+folders.
+
+### `main_script.R`
+
+This is the main script of your project if you are going to use the
+`doParallel` backend (if you are running the simulations using one
+physical host only, e.g. a personal computer).
+
+By default, the parallel backend is set to use half of the available
+cores.
+
+``` r
+library(doParallel)
+nodes = detectCores()
+cl = makeCluster(nodes/2) # Specify number of threads here...
+registerDoParallel(cl)
+```
+
+You can change it to `cl = makeCluster(nodes)` to use the full parallel
+capacity. However, take into account that many pc’s have two virtual
+cores for each phisical core, and using all the available virtual cores
+may cause the system to overheat.
+
+> You don’t have to edit this file, unless you want to change the number
+> of threads.
+
+### `main_script_mpi.R`
+
+This is the main script of your project if you are going to use the
+`doMPI` backend (for instance, if you are using several physical hosts
+that communicate using MPI).
+
+> This file is not supposed to run directly in R. Use either some job
+> queue (such as PBS), or the script file `mpi_run.sh`. You don’t have
+> to edit this file.
+
+### `functions.R`
+
+This file contains the declarations of all user functions that are
+supposed to be accessed by the child processes. If you want to track the
+progress of your simulations, define a `wlog` function (default).
+
+``` r
+wlog = function(text,...){
+  cat(paste0(date(),"   ", text,...,"
+"), file="log.txt", append = T)
+}
+```
+
+### `body.R`
+
+This is the source code of your simulation design, divided into the
+following sections.
+
+  - Log file (initialization)
+  - Global Libraries (add your required libraries here)
+  - Parameters (declare the global parameters of the simulations here)
+  - Generate data (If your simulations require data generation, you can
+    do it *before* the main loop, and save time later. In addition, this
+    is useful if several processes later will share the same dataset)
+  - Parallel loop (edit to match your simulation requirements)
+
+### `data`
+
+Folder to place the data files.
+
+### `results`
+
+At the end of the simulations, `results/results.RData` contains a copy
+of the global environment, with the simulation results.
+
+### `log.txt`
+
+This log file is generated runtime by default, and contains the progress
+of the simulations. You can log specific details of your simulations
+using the `wlog`function.
